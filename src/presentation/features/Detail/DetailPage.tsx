@@ -8,6 +8,7 @@ import { ArtworkRepositoryImpl } from "@data/repositories/ArtworkRepositoryImpl"
 import { ArtworkApiDataSource } from "@data/datasources/ArtworkApiDataSource";
 import Button from "@presentation/atomic/Button/Button";
 import DetailSection from "@component/presentation/ui/DetailSection/DetailSection";
+import HeaderBack from "@component/presentation/atomic/HeaderBack/HeaderBack";
 
 const getArtworkDetail = new GetArtworkDetail(
   new ArtworkRepositoryImpl(new ArtworkApiDataSource()),
@@ -35,6 +36,7 @@ export default function DetailPage() {
 
   return (
     <div className="p-4">
+      <HeaderBack title="Detail" />
       <div className="aspect-square w-full mb-4 relative">
         <Image
           src={`https://www.artic.edu/iiif/2/${artwork.image_id}/full/843,/0/default.jpg`}

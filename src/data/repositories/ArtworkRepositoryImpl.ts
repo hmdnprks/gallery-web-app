@@ -21,4 +21,8 @@ export class ArtworkRepositoryImpl implements ArtworkRepository {
   async getArtworkDetail(id: number): Promise<Artwork> {
     return this.datasource.getArtworkDetail(id);
   }
+
+  async searchArtworks(query: string): Promise<Artwork[]> {
+    return this.datasource.searchArtworks(query);
+  }
 }

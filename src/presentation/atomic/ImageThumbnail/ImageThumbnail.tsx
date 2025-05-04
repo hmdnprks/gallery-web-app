@@ -1,22 +1,35 @@
 import Image from "next/image";
 import Link from "next/link";
 
-type Props = {
+type ImageThumbnailProps = {
   id: number;
-  src: string;
-  alt?: string;
+  image_id?: string;
+  lqip?: string;
+  alt: string;
 };
 
-export default function ImageThumbnail({ id, src, alt }: Props) {
+export default function ImageThumbnail({
+  id,
+  image_id,
+  lqip,
+  alt,
+}: ImageThumbnailProps) {
+  const src = image_id
+    ? `https://www.artic.edu/iiif/2/${image_id}/full/300,/0/default.jpg`
+    : lqip || "/fallback.jpg";
+
   return (
-    <Link href={`/artworks/${id}`} className="block">
-      <Image
-        src={src}
-        alt={alt || "Artwork"}
-        width={300}
-        height={300}
-        className="object-cover aspect-square rounded"
-      />
+    <Link href={`/artworks/${id}`}>
+      <div className="relative aspect-square w-full rounded overflow-hidden shadow-sm">
+        <Image
+          src={src}
+          alt={alt}
+          fill
+          className="object-cover"
+          placeholder={lqip ? "blur" : "empty"}
+          blurDataURL={lqip}
+        />
+      </div>
     </Link>
   );
 }

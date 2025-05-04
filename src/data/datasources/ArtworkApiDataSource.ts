@@ -44,4 +44,11 @@ export class ArtworkApiDataSource {
       provenance_text: dataArtwork.provenance_text,
     };
   }
+
+  async searchArtworks(query: string): Promise<Artwork[]> {
+    const res = await axiosInstance.get("/artworks/search", {
+      params: { q: query },
+    });
+    return res.data.data;
+  }
 }

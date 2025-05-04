@@ -1,11 +1,18 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import ImageThumbnail from "@presentation/atomic/ImageThumbnail/ImageThumbnail";
 import ImageSkeleton from "@presentation/atomic/ImageSkeleton/ImageSkeleton";
+import SearchBar from "@presentation/atomic/SearchBar/SearchBar";
 import useGallery from "./useGallery";
+import useArtworkSearch from "./useArtworkSearch";
+import { useDebounce } from "@lib/hooks/useDebounce";
 
 export default function Gallery() {
+  const [query, setQuery] = useState("");
+  const debouncedQuery = useDebounce(query, 400);
+  const isSearching = debouncedQuery.length > 2;
+
   const {
     artworks,
     fetchNextPage,
@@ -15,50 +22,63 @@ export default function Gallery() {
     error,
   } = useGallery();
 
+  const {
+    data: searchedArtworks,
+    isLoading: isSearchLoading,
+    isError: isSearchError,
+  } = useArtworkSearch(debouncedQuery);
+
   useEffect(() => {
-    const handleScroll = () => {
-      const nearBottom =
-        window.innerHeight + window.scrollY >= document.body.offsetHeight - 100;
-      if (nearBottom && hasMore) fetchNextPage();
-    };
+    if (!isSearching) {
+      const handleScroll = () => {
+        const nearBottom =
+          window.innerHeight + window.scrollY >=
+          document.body.offsetHeight - 100;
+        if (nearBottom && hasMore) fetchNextPage();
+      };
+      window.addEventListener("scroll", handleScroll);
+      return () => window.removeEventListener("scroll", handleScroll);
+    }
+  }, [hasMore, fetchNextPage, isSearching]);
 
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, [hasMore, fetchNextPage]);
-
-  if (isLoading) {
-    return (
-      <div className="grid grid-cols-3 gap-2">
-        {Array.from({ length: 12 }).map((_, i) => (
-          <ImageSkeleton key={i} />
-        ))}
-      </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <p className="text-center py-10 text-red-500">
-        Failed to load artworks. Please try again.
-      </p>
-    );
-  }
+  const displayedArtworks = isSearching ? (searchedArtworks ?? []) : artworks;
+  const loading =
+    (isLoading && !isSearching) || (isSearchLoading && isSearching);
+  const hasError = (error && !isSearching) || (isSearchError && isSearching);
 
   return (
-    <div className="grid grid-cols-3 gap-2">
-      {artworks.map((artwork) => (
-        <ImageThumbnail
-          key={artwork.id}
-          id={artwork.id}
-          src={`https://www.artic.edu/iiif/2/${artwork.image_id}/full/300,/0/default.jpg`}
-          alt={artwork.title}
-        />
-      ))}
+    <div className="p-4 space-y-4">
+      <SearchBar value={query} onChange={setQuery} />
 
-      {isFetchingNextPage &&
-        Array.from({ length: 6 }).map((_, i) => (
-          <ImageSkeleton key={`s-${i}`} />
-        ))}
+      {loading ? (
+        <div className="grid grid-cols-3 gap-2">
+          {Array.from({ length: 24 }).map((_, i) => (
+            <ImageSkeleton key={i} />
+          ))}
+        </div>
+      ) : hasError ? (
+        <p className="text-center py-10 text-red-500">
+          Failed to load artworks. Please try again.
+        </p>
+      ) : (
+        <div className="grid grid-cols-3 gap-2">
+          {displayedArtworks.map((artwork) => (
+            <ImageThumbnail
+              key={artwork.id}
+              id={artwork.id}
+              alt={artwork.title}
+              image_id={artwork.image_id}
+              lqip={artwork.thumbnail?.lqip}
+            />
+          ))}
+
+          {!isSearching &&
+            isFetchingNextPage &&
+            Array.from({ length: 6 }).map((_, i) => (
+              <ImageSkeleton key={`s-${i}`} />
+            ))}
+        </div>
+      )}
     </div>
   );
 }
