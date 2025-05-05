@@ -53,7 +53,7 @@ export default function Gallery() {
       </div>
 
       {loading ? (
-        <div className="grid grid-cols-3 gap-2">
+        <div className="grid grid-cols-3 sm:grid-cols-4 lg:grid-cols-6 gap-2">
           {Array.from({ length: 24 }).map((_, i) => (
             <ImageSkeleton key={i} />
           ))}
@@ -63,7 +63,7 @@ export default function Gallery() {
           Failed to load artworks. Please try again.
         </p>
       ) : (
-        <div className="grid grid-cols-3 gap-2">
+        <div className="grid grid-cols-3 sm:grid-cols-4 lg:grid-cols-6 gap-2">
           {displayedArtworks.map((artwork) => (
             <ImageThumbnail
               key={artwork.id}

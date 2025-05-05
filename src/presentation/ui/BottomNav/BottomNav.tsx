@@ -27,6 +27,10 @@ export default function BottomNavigation() {
           >
             {item.icon}
             <span>{item.label}</span>
+
+            {isActive && (
+              <span className="absolute bottom-0 w-12 h-0.5 rounded-full bg-white" />
+            )}
           </Link>
         );
       })}
