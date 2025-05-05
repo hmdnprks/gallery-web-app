@@ -17,8 +17,9 @@ export function saveArtwork(artwork: Artwork) {
 }
 
 export function removeArtwork(id: number) {
-  const current = getSavedArtworks().filter((a) => a.id !== id);
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(current));
+  const current = getSavedArtworks();
+  const updated = current.filter((a) => a.id !== id);
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
 }
 
 export function isArtworkSaved(id: number): boolean {

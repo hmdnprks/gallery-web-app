@@ -19,6 +19,7 @@ export type Artwork = {
   publication_history?: string | null;
   exhibition_history?: string | null;
   provenance_text?: string | null;
+  colorfulness?: number;
 };
 
 export type ArtworkPaginationResult = {
