@@ -12,6 +12,7 @@ import HeaderBack from "@component/presentation/atomic/HeaderBack/HeaderBack";
 import DetailSkeleton from "@component/presentation/atomic/DetailSkeleton/DetailSkeleton";
 import { useSaveArtwork } from "@component/lib/hooks/useSaveArtwork";
 import ExpandableText from "@component/presentation/atomic/ExpandableText/ExpandableText";
+import { useState } from "react";
 
 const getArtworkDetail = new GetArtworkDetail(
   new ArtworkRepositoryImpl(new ArtworkApiDataSource()),
@@ -20,6 +21,7 @@ const getArtworkDetail = new GetArtworkDetail(
 export default function DetailPage() {
   const { id } = useParams();
   const artworkId = Number(id);
+  const [imgError, setImgError] = useState(false);
 
   const {
     data: artwork,
@@ -46,6 +48,8 @@ export default function DetailPage() {
       <p className="text-center py-10 text-red-500">Failed to load artwork.</p>
     );
 
+  const imageUrl = `https://www.artic.edu/iiif/2/${artwork.image_id}/full/843,/0/default.jpg`;
+
   return (
     <div className="p-4">
       <HeaderBack title="Detail" />
@@ -53,10 +57,11 @@ export default function DetailPage() {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-4">
         <div className="w-full aspect-square relative">
           <Image
-            src={`https://www.artic.edu/iiif/2/${artwork.image_id}/full/843,/0/default.jpg`}
+            src={imgError ? "/image-fallback.png" : imageUrl}
             alt={artwork.title}
             fill
             className="object-cover rounded"
+            onError={() => setImgError(true)}
           />
         </div>
 

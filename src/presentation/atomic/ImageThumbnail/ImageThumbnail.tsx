@@ -1,5 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
+import { useState } from "react";
 
 type ImageThumbnailProps = {
   id: number;
@@ -14,20 +15,23 @@ export default function ImageThumbnail({
   lqip,
   alt,
 }: ImageThumbnailProps) {
-  const src = image_id
-    ? `https://www.artic.edu/iiif/2/${image_id}/full/300,/0/default.jpg`
-    : lqip || "/fallback.jpg";
+  const [imgSrc, setImgSrc] = useState(
+    image_id
+      ? `https://www.artic.edu/iiif/2/${image_id}/full/300,/0/default.jpg`
+      : "/image-fallback.png",
+  );
 
   return (
     <Link href={`/artworks/${id}`}>
       <div className="relative aspect-square w-full rounded overflow-hidden shadow-sm">
         <Image
-          src={src}
+          src={imgSrc}
           alt={alt}
           fill
           className="object-cover"
           placeholder={lqip ? "blur" : "empty"}
           blurDataURL={lqip}
+          onError={() => setImgSrc("/image-fallback.png")}
         />
       </div>
     </Link>
