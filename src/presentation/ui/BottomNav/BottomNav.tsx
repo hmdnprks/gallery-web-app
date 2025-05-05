@@ -22,7 +22,7 @@ export default function BottomNavigation() {
             key={item.href}
             href={item.href}
             className={`flex flex-col items-center text-xs ${
-              isActive ? "text-white" : "text-white/60"
+              isActive ? "text-white font-bold" : "text-white/60"
             }`}
           >
             {item.icon}
