@@ -11,6 +11,7 @@ import DetailSection from "@component/presentation/ui/DetailSection/DetailSectio
 import HeaderBack from "@component/presentation/atomic/HeaderBack/HeaderBack";
 import DetailSkeleton from "@component/presentation/atomic/DetailSkeleton/DetailSkeleton";
 import { useSaveArtwork } from "@component/lib/hooks/useSaveArtwork";
+import ExpandableText from "@component/presentation/atomic/ExpandableText/ExpandableText";
 
 const getArtworkDetail = new GetArtworkDetail(
   new ArtworkRepositoryImpl(new ArtworkApiDataSource()),
@@ -69,13 +70,13 @@ export default function DetailPage() {
           {artwork.thumbnail?.alt_text || "N/A"}
         </DetailSection>
         <DetailSection title="Provenance Text">
-          {artwork.provenance_text || "N/A"}
+          <ExpandableText text={artwork.provenance_text || "N/A"} />
         </DetailSection>
         <DetailSection title="Publication History">
-          {artwork.publication_history || "N/A"}
+          <ExpandableText text={artwork.publication_history || "N/A"} />
         </DetailSection>
         <DetailSection title="Exhibition History">
-          {artwork.exhibition_history || "N/A"}
+          <ExpandableText text={artwork.exhibition_history || "N/A"} />
         </DetailSection>
         <DetailSection title="Artist">
           {artwork.artist_display || "N/A"}
