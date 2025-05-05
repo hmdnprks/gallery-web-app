@@ -47,8 +47,10 @@ export default function Gallery() {
   const hasError = (error && !isSearching) || (isSearchError && isSearching);
 
   return (
-    <div className="p-4 space-y-4">
-      <SearchBar value={query} onChange={setQuery} />
+    <div className="p-4 pt-0 space-y-4">
+      <div className="sticky top-0 z-10 bg-white pt-4 pb-2">
+        <SearchBar value={query} onChange={setQuery} />
+      </div>
 
       {loading ? (
         <div className="grid grid-cols-3 gap-2">

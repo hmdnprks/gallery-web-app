@@ -9,6 +9,8 @@ import { ArtworkApiDataSource } from "@data/datasources/ArtworkApiDataSource";
 import Button from "@presentation/atomic/Button/Button";
 import DetailSection from "@component/presentation/ui/DetailSection/DetailSection";
 import HeaderBack from "@component/presentation/atomic/HeaderBack/HeaderBack";
+import DetailSkeleton from "@component/presentation/atomic/DetailSkeleton/DetailSkeleton";
+import { useSaveArtwork } from "@component/lib/hooks/useSaveArtwork";
 
 const getArtworkDetail = new GetArtworkDetail(
   new ArtworkRepositoryImpl(new ArtworkApiDataSource()),
@@ -28,7 +30,16 @@ export default function DetailPage() {
     enabled: !isNaN(artworkId),
   });
 
-  if (isLoading) return <p className="text-center py-10">Loading...</p>;
+  const { saved, toggleSave } = useSaveArtwork(artwork);
+
+  if (isLoading) {
+    return (
+      <div className="p-4">
+        <HeaderBack title="Detail" />
+        <DetailSkeleton />
+      </div>
+    );
+  }
   if (error || !artwork)
     return (
       <p className="text-center py-10 text-red-500">Failed to load artwork.</p>
@@ -48,7 +59,9 @@ export default function DetailPage() {
 
       <div className="flex justify-between items-center mb-2">
         <p className="text-sm text-gray-500">Credit: {artwork.credit_line}</p>
-        <Button disabled={false}>Save</Button>
+        <Button onClick={toggleSave} disabled={saved}>
+          {saved ? "Saved!" : "Save"}
+        </Button>
       </div>
 
       <div className="space-y-4">
