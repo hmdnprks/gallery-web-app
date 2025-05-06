@@ -24,8 +24,8 @@ export default function ImageThumbnail({
       : lqip || fallbackStatic,
   );
 
-  const placeholderType = lqip && !hasValidImage ? "blur" : "empty";
-  const blurDataURL = lqip && !hasValidImage ? lqip : undefined;
+  const placeholderType = lqip ? "blur" : "empty";
+  const blurDataURL = lqip ?? undefined;
 
   return (
     <Link href={`/artworks/${id}`}>
