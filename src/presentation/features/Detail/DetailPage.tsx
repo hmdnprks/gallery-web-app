@@ -52,7 +52,9 @@ export default function DetailPage() {
 
   return (
     <div className="p-4">
-      <HeaderBack title="Detail" />
+      <div className="sticky top-0 z-20 bg-white">
+        <HeaderBack title="Detail" />
+      </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-4">
         <div className="w-full aspect-square relative">
