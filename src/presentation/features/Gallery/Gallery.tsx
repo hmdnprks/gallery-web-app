@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import ImageThumbnail from "@presentation/atomic/ImageThumbnail/ImageThumbnail";
 import ImageSkeleton from "@presentation/atomic/ImageSkeleton/ImageSkeleton";
 import SearchBar from "@presentation/atomic/SearchBar/SearchBar";
@@ -8,10 +8,15 @@ import useGallery from "./useGallery";
 import useArtworkSearch from "./useArtworkSearch";
 import { useDebounce } from "@lib/hooks/useDebounce";
 
-export default function Gallery() {
+type GalleryProps = {
+  scrollRef: React.RefObject<HTMLDivElement | null>;
+};
+
+export default function Gallery({ scrollRef }: GalleryProps) {
   const [query, setQuery] = useState("");
   const debouncedQuery = useDebounce(query, 400);
   const isSearching = debouncedQuery.length > 2;
+  const isFetchingRef = useRef(false);
 
   const {
     artworks,
@@ -29,17 +34,26 @@ export default function Gallery() {
   } = useArtworkSearch(debouncedQuery);
 
   useEffect(() => {
-    if (!isSearching) {
+    const container = scrollRef?.current;
+    if (!isSearching && container) {
       const handleScroll = () => {
-        const nearBottom =
-          window.innerHeight + window.scrollY >=
-          document.body.offsetHeight - 100;
-        if (nearBottom && hasMore) fetchNextPage();
+        if (isFetchingRef.current) return;
+
+        const { scrollTop, clientHeight, scrollHeight } = container;
+        const nearBottom = scrollTop + clientHeight >= scrollHeight - 100;
+
+        if (nearBottom && hasMore) {
+          isFetchingRef.current = true;
+          fetchNextPage().finally(() => {
+            isFetchingRef.current = false;
+          });
+        }
       };
-      window.addEventListener("scroll", handleScroll);
-      return () => window.removeEventListener("scroll", handleScroll);
+
+      container.addEventListener("scroll", handleScroll, { passive: true });
+      return () => container.removeEventListener("scroll", handleScroll);
     }
-  }, [hasMore, fetchNextPage, isSearching]);
+  }, [hasMore, fetchNextPage, isSearching, scrollRef]);
 
   const displayedArtworks = isSearching ? (searchedArtworks ?? []) : artworks;
   const loading =
